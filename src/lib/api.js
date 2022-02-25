@@ -1,8 +1,63 @@
 import Arweave from 'arweave';
 export const arweave = Arweave.init({});
 
+export const idState = {}
+
+export const getArweaveId = async (address) => {
+	if (!address || (idState[address] || {}).request) { return }
+	if (!isWellFormattedAddress(address)) { return }
+	try {
+		const results = (await arweave.api.post('/graphql', buidIdQuery(address)));
+    console.log(address, results);
+		if (!results || results.data.data.transactions.edges.length == 0) { return }
+		const arweaveIdTx = results.data.data.transactions.edges[0];
+    console.log(arweaveIdTx);
+		const tags = unpackTags(arweaveIdTx.tags)
+		if (tags.Image && !tags.Image.match(/^[a-z0-9_-]{43}$/i)) { delete tags.image }
+		if (!tags.Image && tags['Content-Type']?.includes('image')) { tags.Image = arweaveIdTx.id }
+		idState[address].image = tags.image;
+    idState[address].name = tags.name;
+	} catch (e) {
+		console.error(e)
+	}
+}
+
+function buidIdQuery(address) {
+  const ownersFilter = `owners: ["${address}"]`;
+
+  const queryObject = {
+    query: `{
+      transactions(first:1, ${ownersFilter}
+        tags: [
+          {
+          name: "App-Name",
+          values: ["arweave-id"]
+          }
+        ])
+      {
+        edges {
+          node {
+            id
+            tags {
+              name,
+              value
+            }
+          }
+        }
+      }
+    }`}
+  //console.log(queryObject.query);
+  return queryObject;
+}
+
+export const unpackTags = (tags) => {
+	const result = {};
+	for (const { name, value } of tags) { result[name] ??= value }
+	return result
+}
+
 export const isWellFormattedAddress = (input) => {
-  const re = /^[a-zA-Z0-9_]{43}$/;
+  const re = /^[a-z0-9_-]{43}$/i;
   return re.test(input);
 }
 
