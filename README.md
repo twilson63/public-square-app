@@ -39,7 +39,7 @@ Lets learn by doing, in this tutorial we will take a public square app and add t
 2. [Querying Arweave using GraphQL](querying-arweave-using-graphql) (25-30 minutes)
 3. [Integrating ArweaveJS](integrating-arweavejs) (25-30 minutes)
 4. [Posting Transactions](posting-transactions) (25-30 minutes)
-5. [Deploying to the Permaweb](deploying-to-the-permaweb) (25-30 minutes)
+5. [Polishing and Deploying to the Permaweb](polishing-and-deploying-to-the-permaweb) (25-30 minutes)
 
 ## Setup
 
@@ -821,7 +821,9 @@ In this function, we toggle the IsPosting flag to true, then we fund the transac
 
 Now that we have the core functionality working for our application, lets spend some time to polish up our application and deploy the app to the Permaweb.
 
-## Polling for updates
+Next up we'll be implementing a few features that bring our app much close to being finished and having a viable, self contained, featureset.
+
+### Polling for updates
 
 Now that we’re dispatching new posts to arweave, it would be nice if we could view the new tweet in the timeline without having to refresh manually in the browser repeatedly until it appears at the gateway.
 
@@ -858,8 +860,6 @@ First we set up some working variables that we’ll need to accomplish our goal.
 Aside from posting a graphQL query to the gateway via `getPostInfos()` , the other function this loop implements is our simplified exponential backoff function. Each loop iteration we increment our count variable and use it to calculate how much time to delay before calling `getPostInfos()` again.
 
 Below is a graph of the number of seconds of delay for each iteration of the loop indicated with blue bars. The red bars show what a linear polling cycle would look like if we polled every 2 seconds. You can see how by the 20 second mark linear polling would have made 8 calls, but our exponential backoff (backing off +2 seconds each attempt) would have only made 4. Those 4 calls would have been almost as responsive as linear polling early on, but backed away if the gateway was slow to respond. This reduces the chance of running headlong into rate limiting and also gives the gateway some breathing room if it’s experiencing heavy load.
-
-![NewPost Component](images/image21.png)
 
 Back to the `waitForNewPosts()` function. When `getPostInfos()` returns with results from GraphQL, we search them to see if we can locate our new transaction.
 
@@ -910,7 +910,8 @@ It’s time to test!
 
 Switch to the browser tab containing the dApp, open the developer tools so you can watch the console log. Then post a message and observe the polling in action. It should take a couple of queries before the new post shows up, but once it does it should appear at the top of the timeline, the spinner should hide, and the new Post component should be reset (and editable again).
 
-# Adding protocol features
+### Adding protocol features
+
 One of the exciting things about using existing protocols built on arweave is that they are open and permissionless. You are free to build on top the existing tags/transactions adding some of your own. This way you can incrementally increase the functionality of the protocol without breaking any existing apps.
 
 In twitter hashtags are an important feature that enable users to organically create categories of tweets. The original [Public Square](https://gist.github.com/samcamwilliams/811537f0a52b39057af1def9e61756b2) protocol doesn’t make any mention of categorizing posts, but that doesn’t mean we can’t add it!
@@ -919,7 +920,7 @@ Let’s add the ability for users to add a “topic” to their post (carefully 
 
 These “topics” will be clickable links like hashtags that filter out any post that doesn’t include that topic. To keep things simple and organized we’ll allow just one topic per post.
 
-## Displaying a Topic Link
+### Displaying a Topic Link
 
 Head over to `src/components/Posts.jsx` and modify the `<PostItem />` component. Right after our existing `React.useEffect(() => {` function we added back in the [Handling asynchronous state](02-IntegratingArweaveJS.md#handling-asynchronous-state) section, add the following function.
 
@@ -1018,7 +1019,8 @@ Try a test post to see if your topic shows up in the timeline.
 
 Next up, it’s time to fix those topic links!
 
-# Dynamic Queries
+### Dynamic Queries
+
 GraphQL queries are pretty easy to parameterize. We can modify our existing `buildQuery()` function in `src/lib/api.js` to take a few arguments to further filter the results. Modify the beginning of the `buildQuery()` function to look like this.
 
 ```js
@@ -1072,7 +1074,8 @@ Poof! Now when we go back to the browser and click on users wallet addresses or 
 
 The React implementation is all there in `src/App.js` for you to inspect if you’re curious.
 
-# Deploying to Arweave
+### Deploying to Arweave
+
 Finally, we’ve got a working application but it’s just on our machine, we want to deploy it permanently on arweave making it fully decentralized. 
 
 How do we do it?
@@ -1110,9 +1113,16 @@ Once deployed you’ll get a confirmation
 
 The link provided links to the path manifest file transaction. Following this link will load up our public square app, permanently deployed on arweave. (after a minute or two for the file bytes and manifest to be processed at the gateway)
 
-You’ll notice that the gateway will redirect you to an odd looking url. Something like this https://kgjsyynbuvuqokiydalbxatpg6icwwk2fjyqhu3zlr2dnliaqzxq.arweave.net/UZMsYaGlaQcpGBgWG4JvN5ArWVoqcQPTeVx0Nq0Ahm8/ . It’s the same transaction id, but now it’s being served from a unique subdomain of arweave.net.  This is for security reasons, if all sites/dApp deployed to arweave were served from the same arweave.net domain then they would all share a **localStroage** cache in the browser. This would give a malicious dApp access to data stored by a benevolent app. **So, in order to preserve the security sandbox for each dApp, arweave.net redirects each transaction to their own unique subdomain.**
+You’ll notice that the gateway will redirect you to an odd looking url. Something like this https://kgjsyynbuvuqokiydalbxatpg6icwwk2fjyqhu3zlr2dnliaqzxq.arweave.net/UZMsYaGlaQcpGBgWG4JvN5ArWVoqcQPTeVx0Nq0Ahm8/ . It’s the same transaction id, but now it’s being served from a unique subdomain of arweave.net.  This is for security reasons, if all sites/dApp deployed to arweave were served from the same arweave.net domain then they would all share a **localStorage** cache in the browser. This would give a malicious dApp access to data stored by a benevolent app. **So, in order to preserve the security sandbox for each dApp, arweave.net redirects each transaction to their own unique subdomain.**
 
 Thats it. You're done. You now have your own decentralized, permanently deployed front end to the Public Square protocol on arweave. You can take the shortened version of the link that `arkb` printed out and send it to your peers to see what they think.
 
 
+🥳🎊🎉🎉🎉🎉🎉 YES! You have deployed a dApp using NEAR and Arweave! It is time to celebrate! Great Job!
+
+## Summary
+
+Thank you for taking the time to complete this tutorial, this version of the PublicSquare Tutorial was adapted to accept the NEAR Wallet, but a large part of the work of this application and tutorial should be attributed to DMac, you can find the original app here - https://github.com/DanMacDonald/public-square-app and the original tutorial here - https://github.com/DanMacDonald/public-square-tutorial - 
+
+🙏🏻 Thank you DMac for this great tutorial and all the work you do in the Arweave Community!
 
