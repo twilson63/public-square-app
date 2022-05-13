@@ -46,6 +46,7 @@ const App = () => {
           <Routes>
             <Route path="/" name="home" element={
               <Home
+                isWalletConnected={isWalletConnected}
                 isSearching={isSearching}
                 postInfos={postInfos}
               />}
@@ -69,7 +70,7 @@ const Home = (props) => {
   return (
     <>
       <header>Home</header>
-      <NewPost />
+      <NewPost isLoggedIn={props.isWalletConnected} />
       {props.isSearching && <ProgressSpinner />}
       <Posts postInfos={props.postInfos} />
     </>

@@ -15,6 +15,7 @@ export const WalletSelectButton = (props) => {
       if (await isSignedIn()) {
         setAddressText(await getAccountId())
         setActiveWallet(NEAR)
+        props.onWalletConnect()
       }
     }
     loadWallet()
