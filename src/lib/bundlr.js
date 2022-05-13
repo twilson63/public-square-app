@@ -20,7 +20,8 @@ export const createTx = async (text, tags) => {
 export const fundBundlr = async (size) => {
   const bundlr = await getBundlr()
   // calculate amount based on size * 10%
-  const total = Number(size) * 1.10
+  const total = Math.round(Number(size) * 1.10)
+
   const amount = (await bundlr.getPrice(total)).toString()
   await bundlr.fund(amount);
   await delay(1000) // wait for funding to occur

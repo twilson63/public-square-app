@@ -12,7 +12,7 @@ export const NewPost = (props) => {
 
     const funded = await fundBundlr(postValue.length)
     if (funded) {
-      const tx = createTx(postValue, [
+      const tx = await createTx(postValue, [
         { name: 'App-Name', value: 'PublicSquare' },
         { name: 'Content-Type', value: 'text/plain' },
         { name: 'Version', value: '1.0.1' },
@@ -22,6 +22,12 @@ export const NewPost = (props) => {
       try {
         await tx.sign()
         await tx.upload()
+        setPostValue("");
+        //setTopicValue("");
+
+        if (props.onPostMessage) {
+          props.onPostMessage(tx.id)
+        }
       } catch (err) {
         console.log(err)
       }
