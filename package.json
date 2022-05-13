@@ -15,14 +15,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "react-textarea-autosize": "^8.3.3",
-    "web-vitals": "^2.1.4",
-    "assert": "npm:assert-browserify",
-    "buffer": "npm:buffer",
-    "crypto": "npm:crypto-browserify",
-    "http": "npm:stream-http",
-    "https": "npm:https-browserify",
-    "path-browserify": "^1.0.1",
-    "stream": "npm:stream-browserify"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
