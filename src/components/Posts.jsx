@@ -19,7 +19,7 @@ const PostItem = (props) => {
   React.useEffect(() => {
     let newPostMessage = "";
     let newStatus = "";
-    
+
     if (!props.postInfo.message) {
       setStatusMessage("loading...");
       let isCancelled = false;
@@ -29,7 +29,7 @@ const PostItem = (props) => {
         if (!response) {
           newStatus = props.postInfo.error;
         } else if (response.status && (response.status === 200 || response.status === 202)) {
-          props.postInfo.message = response.data;
+          props.postInfo.message = response.data.toString();
           newStatus = "";
           newPostMessage = response.data;
         } else {
@@ -45,7 +45,7 @@ const PostItem = (props) => {
       getPostMessage();
       return () => isCancelled = true;
     }
-    
+
   }, [props.postInfo]);
 
   return (
