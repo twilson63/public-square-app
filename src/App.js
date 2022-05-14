@@ -6,33 +6,16 @@ import { Posts } from './components/Posts';
 import { ProgressSpinner } from './components/ProgressSpinner';
 import { TopicSearch } from './components/TopicSearch';
 import { UserSearch } from './components/UserSearch';
-import { NewPost } from './components/NewPost';
-
 import './App.css';
-import { buildQuery, arweave, createPostInfo, delayResults } from './lib/api';
 
 async function getPostInfos() {
-  const query = buildQuery();
-  const results = await arweave.api.post('graphql', query)
-    .catch(err => {
-      console.error('GraphQL query failed');
-      throw new Error(err);
-    });
-  const edges = results.data.data.transactions.edges;
-  return await delayResults(100, edges.map(edge => createPostInfo(edge.node)));
+  return [];
 }
 
 const App = () => {
-  const [isWalletConnected, setIsWalletConnected] = React.useState(false);
-  const [postInfos, setPostInfos] = React.useState([])
-  const [isSearching, setIsSearching] = React.useState(false)
 
   React.useEffect(() => {
-    setIsSearching(true)
-    getPostInfos().then(posts => {
-      setPostInfos(posts)
-      setIsSearching(false)
-    })
+    getPostInfos();
   }, [])
 
   return (
@@ -40,15 +23,12 @@ const App = () => {
       <div id="content">
         <aside>
           <Navigation />
-          <WalletSelectButton onWalletConnect={() => setIsWalletConnected(true)} />
         </aside>
         <main>
           <Routes>
             <Route path="/" name="home" element={
               <Home
-                isWalletConnected={isWalletConnected}
-                isSearching={isSearching}
-                postInfos={postInfos}
+
               />}
             />
             <Route path="/topics" element={<Topics />}>
@@ -70,9 +50,6 @@ const Home = (props) => {
   return (
     <>
       <header>Home</header>
-      <NewPost isLoggedIn={props.isWalletConnected} />
-      {props.isSearching && <ProgressSpinner />}
-      <Posts postInfos={props.postInfos} />
     </>
   );
 };

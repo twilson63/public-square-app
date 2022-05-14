@@ -1,10 +1,5 @@
-import Arweave from 'arweave'
 
-export const arweave = Arweave.init({
-  host: 'arweave.net',
-  port: 443,
-  protocol: 'https'
-})
+export const maxMessageLength = 1024;
 
 export const isWellFormattedAddress = (input) => {
   const re = /^[a-zA-Z0-9_]{43}$/;
@@ -21,49 +16,13 @@ export const createPostInfo = (node) => {
     height: height,
     length: node.data.size,
     timestamp: timestamp,
-    request: null,
   }
-  if (postInfo.length < 1048) {
-    postInfo.request = arweave.api.get(`/${node.id}`, { timeout: 10000 })
-      .catch(() => { postInfo.error = 'timeout loading data' });
-  } else {
-    postInfo.error = 'data is too large.'
-  }
-  return postInfo
+  return postInfo;
 }
 
 export const buildQuery = () => {
-  const queryObject = {
-    query: `
-query {
-	  transactions(first: 100, 
-      tags: [
-			  { name: "App-Name", values: ["PublicSquare"] },
-				{ name: "Content-Type", values: ["text/plain"] }
-		  ]
-	) {
-	  edges {
-		  node {
-			  id
-				owner {
-				  address
-			  }
-				data {
-				  size
-				}
-				block {
-				  height
-					timestamp
-				}
-				tags {
-				  name
-					value
-				}
-			}
-		}
-	}
-}`}
-  return queryObject
+  const queryObject = {}
+  return queryObject;
 }
 
 // in miliseconds

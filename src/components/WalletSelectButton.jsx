@@ -10,17 +10,6 @@ export const WalletSelectButton = (props) => {
   const [activeWallet, setActiveWallet] = React.useState(NONE);
   const [addressText, setAddressText] = React.useState("xxxxx...xxx");
 
-  useEffect(() => {
-    const loadWallet = async () => {
-      if (await isSignedIn()) {
-        setAddressText(await getAccountId())
-        setActiveWallet(NEAR)
-        props.onWalletConnect()
-      }
-    }
-    loadWallet()
-  }, [])
-
   async function onWalletSelected(walletName) {
     let address = await window.arweaveWallet.getActiveAddress();
     if (address) {
@@ -58,7 +47,7 @@ const WalletModal = (props) => {
   async function connectWallet(walletName) {
     switch (walletName) {
       case NEAR:
-        await signIn()
+
         break;
       default:
         throw new Error(`Attempted to connect unknown wallet ${walletName}`);
