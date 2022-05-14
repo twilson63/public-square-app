@@ -36,10 +36,10 @@ Lets learn by doing, in this tutorial we will take a public square app and add t
 ## Topics
 
 1. [Setup](setup)
-2. [Querying Arweave using GraphQL](querying-arweave-using-graphql) (25-30 minutes)
-3. [Integrating ArweaveJS](integrating-arweavejs) (25-30 minutes)
-4. [Posting Transactions](posting-transactions) (25-30 minutes)
-5. [Polishing and Deploying to the Permaweb](polishing-and-deploying-to-the-permaweb) (25-30 minutes)
+2. [Querying Arweave using GraphQL](#querying-arweave-using-graphql) (25-30 minutes)
+3. [Integrating ArweaveJS](#integrating-arweavejs) (25-30 minutes)
+4. [Posting Transactions](#posting-transactions) (25-30 minutes)
+5. [Polishing and Deploying to the Permaweb](#polishing-and-deploying-to-the-permaweb) (25-30 minutes)
 
 ## Setup
 
@@ -141,7 +141,7 @@ Alright, we have all the tools in our toolbox to start building our Public Squar
 
 Lets now head over to our project and open up your favorite code editor to navigate to the `src/lib/api.js` file. Update the `buildQuery` function to add our GraphQL query.
 
-```
+``` js
 export const buildQuery = () => {
   const queryObject = { query: `
 query {
@@ -209,13 +209,13 @@ This will create an instance of the arweave api object with the default configur
 
 In your code editor, open the `src/App.js` file and lets import our `buildQuery` and `arweave` exports from `./lib/api`.
 
-```
+``` js
 import { buildQuery, arweave } from './lib/api';
 ```
 
 Then edit the `getPostInfos()` function
 
-```
+``` js
 async function getPostInfos() {
  const query = buildQuery();
  const results = await arweave.api.post('graphql', query)
@@ -235,7 +235,7 @@ In this function, we invoke the buildQuery method to get our GraphQL query and t
 
 You can check your developer console in the browser and you should see a hundred objects in an array. You can expand the first element and see our node data:
 
-```
+``` JSON
 {
   "node": {
     "id": "1qtxYvjcIRVTR3aoiFbOp0ZMsheu420XtJB6ar5F3vw",
@@ -283,7 +283,7 @@ You can check your developer console in the browser and you should see a hundred
 
 Now that we are getting some results, lets format each node and display the transaction on the the web page. We will need to map each node from the result list into a transform function that converts each node into a `postData` object. You can look at our `createPostInfo` function in the `src/lib/api.js` file. This function takes a node object and returns a `postInfo` object.
 
-```
+``` js
 export const createPostInfo = (node) => {
  const ownerAddress = node.owner.address;
  const height = node.block ? node.block.height : -1;
@@ -307,12 +307,13 @@ Transaction headers know the number of bytes of data associated with them. Even 
 
 	Let's wire up our createPostInfo to transform our nodes that we received back from our GraphQL query. In the file `src/App.js`, include the `createPostInfo` in the import of `./lib/api` 
 	
-	```
+``` js
 	import { buildQuery, arweave, createPostInfo } from './lib/api'
-	
+```	
+
 	and lets change the return line in the `getPostInfos()` function to map over the edges coverting each node into a `postInfo` object:
 
-```
+``` js
 return edges.map(edge => createPostInfo(edge.node))
 ```
 
@@ -325,7 +326,7 @@ Over in React land, keep the `src/App.js` file open and let's start adding some 
 
 Let's connect our `postInfos` query to the react `App` component using the `useEffect` hook. The `useEffect` hook is specifically setup to run during component mount or load.
 
-``` 
+``` js
 React.useEffect(() => {
   setIsSearching(true)
 	getPostInfos().then(posts => {
@@ -344,13 +345,13 @@ First let's take a quick look at `useEffect()` as it's relatively recent additio
 
 Now with our App component, we have a router, and within this router we have a route with a path of `/` that renders our home component, we want to add a couple of attributes to our `<Home />` component that will pass down as props to the implementation of the home component.
 
-```
+``` js
 <Home isSearching={isSearching} postInfos={postInfos} />`
 ```
 
 We have included the `Home` component implementation in the same file, so scroll down to the `const Home` component implementation and lets add the following lines in the return markup, right below the `<header>Home</header>` line.
 
-```
+``` js
 {props.isSearching && <ProgressSpinner />}
 <Posts postInfos={props.postInfos} />
 ```
@@ -367,7 +368,7 @@ To load the postInfo content we need to make a request for each postInfo to the 
 
 Lets head back to `createPostInfos()` in the `src/lib/api.js` file and edit the last few lines of the function to return some content for our postInfo object.
 
-```
+``` js
     request: null,
 	}
   if (postInfo.length < 1048) {
@@ -389,7 +390,7 @@ React's use of component architecture leads to a modular architecture that enabl
 
 The first thing to note is that our `<Posts />` component just takes an array of the `postInfos` we have passed via `props` and we use the `map()` function to convert each `postInfo` into a `<PostItem />` component for react to render!
 
-```
+``` js
 export const Posts = (props) => {
   return (
     <div>
@@ -420,7 +421,7 @@ We have two React states, postMessage and statusMessage. Nothing unexpected ther
 
 There is one more optimization we can do. What if we delayed the request so we would give the component a small amount of time to load the content before displaying the`postInfo`. In `src/App.js` we can modify the last line of the `getPostInfos()` to look use a `delayResults` function in our `src/lib/api.js` file.
 
-```
+``` js
 return await delayResults(100, edges.map(edge => createPostInfo(edge.node)));
 ```
 
@@ -431,6 +432,7 @@ return await delayResults(100, edges.map(edge => createPostInfo(edge.node)));
 The purpose of this `useEffect()` in the `<PostItem />` component is to await the transaction data request we initiated in `createPostInfo()` (in the [Retrieving transaction data](#retrieving-transaction-data) step). This is the densest logic we’ll cover in this guide, so we’ll take it step by step.
 
 First off we have some local variables to track changes to the status and post messages that our `<PostItem /> `component renders.
+
 ```js
 React.useEffect(() => {
   let newPostMessage = "";
@@ -446,6 +448,7 @@ In this case of an unloaded component, if our `useEffect()` function tries to in
 So, we only want to update our React state if the `<PostItem />` component is still mounted and in use. We’ll see how to do that in a moment, but for now we’ll avoid updating the React state directly and track any changes to our posts status or message in local variables.
 
 Next, we’ll want to do work only when the `item.message` property is undefined. This is true the first time `useEffect()` executes as the `<Post />` component is mounted.
+
 ```js
 if (!props.item.message) {
  setStatusMessage("loading...");
@@ -478,6 +481,7 @@ if (!props.item.message) {
 The first thing we do is use the `setStatusMessage()` React state function to set a "loading…" status. Because this will happen the very first time the component is displayed (mounted) we don’t have to worry about setting React state on an unmounted component.
 
 Next we need to expose a means for React to cancel our `useEffect()` call if the component is unmounted while `useEffect()` is in progress. To do that we set a control variable
+
 ```js
 let isCancelled = false;
 ``` 
@@ -485,9 +489,11 @@ let isCancelled = false;
 Next we declare an `async` `getMessage()` function. React’s `useEffect()` functions are not `async` themselves but declaring an inner `asyn`c function this way lets us write code that utilizes async calling semantics. This enables us to use `await` which improves readability by reducing the telescoping effect of using promise-style  `.then()`‘s repeatedly.
 
 The first thing we do in `getMessage()` is to 
+
 ```js
 const response = await props.postInfo.request`
 ```
+
 This` props.item.request` may or may not have been completed before `useEffect()` is executed, but in either case we won’t move to the next line until we have a completed request.
 
 When we created this item.request back in the [Retrieving transaction data](#retrieving-transaction-data) step, we also added a `.catch()` to handle any errors. If an error happened during the request, the value of response would end up being `undefined` and the error text would be stored in `item.error`.
@@ -497,9 +503,11 @@ So an error is the first thing we check for with `if (!response) {` and we store
 Next  is our valid case. We have a response and it has a status of 200 (the [HTTP Status code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) for success) or in the case of a pending data a status of 202.
 
 In this case we add a new property with  
+
 ```js
 props.postInfo.message = response.data;
 ``` 
+
 and we stuff the response data (post message) into it. If the `useEffect()` executes again and we already have the message we won’t have to do all this work again, Once we have the post message in hand, we no longer want to display the “loading…” status text in the `<PostItem /> `so we set our newStatus to an empty string.
 
 We also update our `newPostMessage` local variable with the post message.
@@ -510,6 +518,7 @@ How can data be missing on Arweave? Isn’t data on arweave permanent?
 Good question to ask, this situation can arise when someone posts a transaction but fails to upload the data (or the upload is interrupted). In this case the network may contain partial data or no data for a given transaction. Arweave supports re-uploading the data if an upload is interrupted and the nodes are incentivized to receive this data because it may be used when mining new nodes. A nice feature of arweave is you only pay for the first transaction, once the transaction is mined you are free to re-upload any missing data without any additional cost.
 
 All right! We’re to the last bit.
+
 ```js
    if (isCancelled)
      return;
@@ -524,6 +533,7 @@ But how do we know if we’ve been canceled or not? Who sets isCancelled to true
 Great question.
 
 Other than calling our `getMessage()` function to manage the loading of the post message. The last thing `useEffect()` does is…
+
 ```js
 return () => isCancelled = true;
 ```
@@ -608,19 +618,19 @@ This library will give us some basic methods to call to check if the user is sig
 
 The first thing we want to do is import the api methods
 
-```
+``` js
 import { isSignedIn, signIn, getAccountId } from '../lib/near'
 ```
 
 Next lets create a constanct to represent `NEAR`
 
-```
+``` js
 const NEAR = "near";
 ```
 
 In the `WalletButton` button component, we need to add a NEAR case to the switch statement.
 
-```
+``` js
 	case NEAR:
       return (<div className="walletButton altFill">
         <img src="near_icon_wht.svg" alt="wallet icon" />
@@ -632,7 +642,7 @@ At the top of the `WalletSelectButton` component after the `useState` lines of c
 
 > NOTE: 
 
-```
+``` js
 useEffect(() => {
     const loadWallet = async () => {
       if (await isSignedIn()) {
@@ -647,10 +657,10 @@ useEffect(() => {
 
 In the `WalletModal` component, we need to add the NEAR sign in case to the switch statement.
 
-```
-      case NEAR:
-        await signIn()
-        break;
+``` js
+  case NEAR:
+    await signIn()
+    break;
 
 ```
 
@@ -658,13 +668,13 @@ In the `WalletModal` component, we need to add the NEAR sign in case to the swit
 
 Now that we have connected our wallet, we are ready to create a new Post. Our app provides a React component to get us started. Open up `src/App.js` and locate the Home component. Right below the line `<header>Home</header>`, add the following component declaration.
 
-```
+``` js
 <NewPost />
 ```
 
 You editor should automatically add...
 
-```
+``` js
 import { NewPost } from './components/NewPost';
 ```
 
@@ -698,6 +708,7 @@ const [isPosting, setIsPosting] = React.useState(false);
 ```
 
 You can dig into the implementation if you’re inclined, but all you really need to know is that 
+
 * The text the user types into the textarea is stored in `postValue`
 * We can set a flag, `isPosting`, to enable or disable input on the interactive elements.. Disabling input on post provides visual feedback to the user that the post has been submitted. It also prevents them from hitting the “Post” button multiple times, potentially posting duplicate posts unintentionally.
 
@@ -712,7 +723,7 @@ At long last, we have been building up to this moment, the time to submit some d
 
 Let's create a library file to help us with the Bundlr Module, create a new file in `src/lib` called `bundlr.js` 
 
-```
+``` js
 import { WebBundlr } from "@bundlr-network/client/build/web";
 import { getWallet } from './near'
 ```
@@ -721,7 +732,7 @@ Import `WebBundlr` and `getWallet` in to our `bundlr.js` module.
 
 Next, add a `getBundlr` function to use in all of our export functions, this function will get the wallet and init a bundlr object to use to fund, create, sign and post the transaction.
 
-```
+``` js
 const getBundlr = async () => {
   const wallet = await getWallet()
   const bundlr = new WebBundlr(
@@ -739,7 +750,7 @@ Next we will create a `createTx` function, this function takes two arguments:
 * text: which is a string representing the data to submit
 * tags: an array of `{name, value}` objects that will be the meta data on the transaction that we can use in GraphQL to query for.
 
-```
+``` js
 export const createTx = async (text, tags) => {
   const bundlr = await getBundlr()
   return await bundlr.createTransaction(text, { tags })
@@ -750,7 +761,7 @@ Fund the bundlr account, in order to post transactions on to Arweave using diffe
 
 > NOTE: We added a delay in the funding process to give some time for the network to resolve the balance.
 
-```
+``` js
 export const fundBundlr = async (size) => {
   const bundlr = await getBundlr()
   // calculate amount based on size * 10%
@@ -770,7 +781,7 @@ export const fundBundlr = async (size) => {
 
 This is the delay function we use to pause the funding process waiting for the balance to clear.
 
-```
+``` js
 function delay(t) {
   return new Promise(function (resolve) {
     setTimeout(function () {
@@ -782,7 +793,7 @@ function delay(t) {
 
 Now that we have our bundlr support module, we are ready to create a new `Post`, in the `src/components/NewPost.jsx` component, lets modify the `onPostButtonClicked` function to include the following:
 
-```
+``` js
 async function onPostButtonClicked() {
     setIsPosting(true)
 
@@ -815,7 +826,7 @@ async function onPostButtonClicked() {
 
 In this function, we toggle the IsPosting flag to true, then we fund the transaction by calling the `fundBundlr` function passing the length of the message, then we create a Transaction adding our data and tags. Now that we have a transaction, we sign and upload the transaction, finally notifying any parent that we successfully uploaded our `Post`.
 
-🎉🎉 Congrats you are now deploying your `Posts` on to the PublicSquare of Arweave!
+🎉🎉 Congrats you are now uploading your `Posts` on to the PublicSquare of Arweave!
 
 ## Polishing and Deploying to the Permaweb
 
@@ -1006,6 +1017,7 @@ And when you input a topic it should do input validation and highlight the text.
 Finally let’s make sure any topic the user inputs is added to the transaction as a custom tag to the transaction.
 
 Scroll up to the `onPostButtonClicked()` function and add the following lines of code below where we specify the other transaction tags.
+
 ```js
 if(topicValue) {
   tx.addTag('Topic', topicValue);
@@ -1065,6 +1077,7 @@ These arguments allow us to filter the query results in three important ways.
 * Finally a topic argument will enable us to limit the results to only those transactions with a “Topic” tag whose value matches our argument. You can read more about [filtering by tags](https://gql-guide.vercel.app/#tags) here.
 
 Then, open up `src/App.js` and modify our `getPostInfos()` function so it can pass through address and topic values as query filters.
+
 ```js
 async function getPostInfos(ownerAddress, topic) {
  const query = buildQuery({address: ownerAddress, topic});
