@@ -13,7 +13,7 @@ async function getPostInfos() {
 }
 
 const App = () => {
-  
+
   React.useEffect(() => {
     getPostInfos();
   }, [])
@@ -27,9 +27,9 @@ const App = () => {
         <main>
           <Routes>
             <Route path="/" name="home" element={
-            <Home 
+              <Home
 
-            />}
+              />}
             />
             <Route path="/topics" element={<Topics />}>
               <Route path="/topics/" element={<TopicSearch />} />
@@ -86,7 +86,7 @@ const TopicResults = () => {
     setIsSearching(true);
     setTopicPostInfos([]);
     try {
-      getPostInfos(null,topic).then(posts => { 
+      getPostInfos(null, topic).then(posts => {
         setTopicPostInfos(posts);
         setIsSearching(false);
       });
@@ -97,9 +97,9 @@ const TopicResults = () => {
   }, [topic])
   return (
     <>
-    <TopicSearch searchInput={topic} onSearch={onTopicSearch}/>
-    {isSearching && <ProgressSpinner />}
-    <Posts postInfos={topicPostInfos} />
+      <TopicSearch searchInput={topic} onSearch={onTopicSearch} />
+      {isSearching && <ProgressSpinner />}
+      <Posts postInfos={topicPostInfos} />
     </>
   )
 }
@@ -117,8 +117,8 @@ function UserResults() {
   React.useEffect(() => {
     setIsSearching(true);
     try {
-      getPostInfos(addr).then(posts => { 
-        setUserPostInfos(posts); 
+      getPostInfos(addr).then(posts => {
+        setUserPostInfos(posts);
         setIsSearching(false);
       });
     } catch (error) {
@@ -128,9 +128,9 @@ function UserResults() {
   }, [addr])
   return (
     <>
-    <UserSearch searchInput={addr} onSearch={onUserSearch}/>
-    {isSearching && <ProgressSpinner />}
-    <Posts postInfos={userPostInfos} />
+      <UserSearch searchInput={addr} onSearch={onUserSearch} />
+      {isSearching && <ProgressSpinner />}
+      <Posts postInfos={userPostInfos} />
     </>
   );
 };

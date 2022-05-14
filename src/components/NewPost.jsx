@@ -21,7 +21,7 @@ export const NewPost = (props) => {
             readOnly={true}
           />
           <div className="newPost-postRow">
-          {/* <div className="topic">
+            {/* <div className="topic">
               # 
               <input
                 type="text" 
@@ -32,7 +32,7 @@ export const NewPost = (props) => {
               />
             </div> */}
             <div >
-              <button 
+              <button
                 className="submitButton"
                 disabled={true}
               >
@@ -48,8 +48,8 @@ export const NewPost = (props) => {
           <TextareaAutosize
             value={postValue}
             onChange={e => setPostValue(e.target.value)}
-            rows="1" 
-            placeholder="What do you have to say?" 
+            rows="1"
+            placeholder="What do you have to say?"
           />
           <div className="newPost-postRow">
             {/* <div className="topic"
@@ -65,9 +65,9 @@ export const NewPost = (props) => {
               />
             </div> */}
             <div >
-              <button 
+              <button
                 className="submitButton"
-                disabled={isDisabled} 
+                disabled={isDisabled}
                 onClick={onPostButtonClicked}
               >
                 Post
