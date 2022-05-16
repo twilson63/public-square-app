@@ -549,6 +549,20 @@ By returning a function from `useEffect()` we are giving React a way to cancel o
 
 With Arweave, every write costs, but you only have to pay once. To allow our users to post transactions to the Arweave we need to get transactions signed by the users private key. But, we do not want to know what the private key is, we want the user to be able to keep that key private, this is where we need to communicate with a web3 wallet. In our case, we will be using the NEAR wallet to connect and use to sign our `postInfo` object to send to the bundlr network, a layer 2 technology that allows us to use different chain tokens to store data on Arweave.
 
+Head over to the `src/App.js` file and let's add some state. Any number of components could want to know if the user is signed in or not so it makes sense to store a flag at the `<App />` component level to indicate if the user has connected a wallet or not.
+
+Add the following line to the start of the `App()` function.
+```js
+const [isWalletConnected, setIsWalletConnected] = React.useState(false);
+```
+
+This should appear right above the two other `useSate()` lines we added for `postInfos` and `isSearching`. Now scroll down to where the `<Navigation />` component appears in the file and add in the following line.
+```js
+<WalletSelectButton onWalletConnect={() => setIsWalletConnected(true)}/>
+```
+
+You should now see a big “Select Wallet” button appearing below the left navigation in the app.
+
 ### Connecting to a wallet
 
 In order to allow NEAR Protocol users to add `posts` to the PublicSquare Arweave feed, we need a couple of libraries to install.
