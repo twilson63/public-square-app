@@ -31,7 +31,7 @@ const PostItem = (props) => {
         } else if (response.status && (response.status === 200 || response.status === 202)) {
           props.postInfo.message = response.data.toString();
           newStatus = "";
-          newPostMessage = response.data;
+          newPostMessage = props.postInfo.message;
         } else {
           newStatus = "missing data";
         }
