@@ -321,6 +321,11 @@ return edges.map(edge => createPostInfo(edge.node))
 
 Over in React land, keep the `src/App.js` file open and let's start adding some React state. We are going to use the `useState` hook to add two states to our component, `postInfos` and `isSearching`.
 
+``` js
+const [isSearching, setIsSearching] = useState(false)
+const [postInfos, setPostInfos] = useState([])
+```
+
 * The `postInfos` state is where we'll keep our array of `postInfo` items. React only rebinds views that use those items if the underlyin data changes. By storing it at the application level it allows us to navigate around the other areas of the UI without unloading our `postInfos`. 
 * `isSearching` is a flag that controls the visibility of a loading spinner that will show while our query is running. 
 
