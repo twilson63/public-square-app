@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import "./walletSelectButton.css";
-import { isSignedIn, signIn, getAccountId } from '../lib/near'
 
 const NONE = "None";
-const NEAR = "near";
 
 export const WalletSelectButton = (props) => {
   const [showModal, setShowModal] = React.useState(false);
@@ -31,11 +29,6 @@ export const WalletSelectButton = (props) => {
 
 const WalletButton = (props) => {
   switch (props.walletName) {
-    case NEAR:
-      return (<div className="walletButton altFill">
-        <img src="near_icon_wht.svg" alt="wallet icon" />
-        <p>{props.walletAddress}</p>
-      </div>)
     default:
       return (<div className="walletButton" onClick={props.onClick}>
         Select Wallet
