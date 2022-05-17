@@ -38,7 +38,7 @@ Lets learn by doing, in this tutorial we will take a public square app and add t
 1. [Setup](setup)
 2. [Querying Arweave using GraphQL](#querying-arweave-using-graphql) (25-30 minutes)
 3. [Integrating ArweaveJS](#integrating-arweavejs) (25-30 minutes)
-4. [Posting Transactions](#posting-transactions) (25-30 minutes)
+4. [Posting Transactions](#posting-transactions) (45-60 minutes)
 5. [Polishing and Deploying to the Permaweb](#polishing-and-deploying-to-the-permaweb) (25-30 minutes)
 
 ## Setup
